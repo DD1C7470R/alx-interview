@@ -28,5 +28,5 @@ def pascal_triangle(n):
 
                     counter += 1
                 old_results = results
-        triangle.append(results)
+            triangle.append(results)
     return triangle

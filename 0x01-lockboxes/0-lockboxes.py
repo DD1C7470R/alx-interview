@@ -3,6 +3,7 @@
 
 from collections import deque
 
+
 def canUnlockAll(boxes):
     '''algorithm for locked boxes'''
 

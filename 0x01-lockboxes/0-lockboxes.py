@@ -1,6 +1,10 @@
+#!/usr/bin/python3
+'''algorithm for locked boxes'''
+
 from collections import deque
 
 def canUnlockAll(boxes):
+    '''algorithm for locked boxes'''
     if not boxes or not boxes[0]:
         # Empty input or the first box is empty
         return False

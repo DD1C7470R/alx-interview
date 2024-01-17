@@ -7,17 +7,13 @@ def minOperations(n):
     if not isinstance(n, int) or n <= 1:
         return 0
 
-    num_of_ops = 0
-    num_of_letters = 1
+    factors = []
+    for i in range(2, int(n ** 0.5) + 1):
+        while n % i == 0:
+            factors.append(i)
+            n //= i
+    if n > 1:
+        factors.append(n)
 
-    while num_of_letters < n:
-        if n % num_of_letters == 0:
-            # If num_of_letters is a factor of n, we can "Copy All" and "Paste"
-            num_of_ops += 2
-            num_of_letters *= 2
-        else:
-            # If num_of_letters is not a factor of n, we can only "Paste"
-            num_of_ops += 1
-            num_of_letters += num_of_letters
-
+    num_of_ops = sum(factors)
     return num_of_ops

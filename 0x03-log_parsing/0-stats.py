@@ -34,9 +34,9 @@ def process_log_line(line):
 
 
 def print_statistics(total_file_size, lines_by_status):
-    print(f'File size: {total_file_size}')
+    print('File size: {:d}'.format(total_file_size))
     for status_code in sorted(lines_by_status):
-        print(f'{status_code}: {lines_by_status[status_code]}')
+        print('{}: {:d}'.format(status_code, lines_by_status[status_code]))
 
 
 if __name__ == "__main__":
@@ -58,5 +58,5 @@ if __name__ == "__main__":
                     print_statistics(total_file_size, lines_by_status)
 
     except KeyboardInterrupt:
-        print("\nKeyboard interruption. Printing current statistics:")
         print_statistics(total_file_size, lines_by_status)
+        raise

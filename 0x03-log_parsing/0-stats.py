@@ -18,7 +18,7 @@ def process_log_line(line):
         pass
         # Return a dictionary with the extracted information
     return {
-             'status_code': int(status_code),
+             'status_code': status_code,
             'file_size': file_size
             }
 
@@ -34,13 +34,15 @@ if __name__ == "__main__":
     lines_by_status = defaultdict(int)
     total_file_size = 0
     line_count = 0
+    codes =  ["200", "301", "400", "401", "403", "404", "405", "500"]
     try:
         for line in sys.stdin:
             log_entry = process_log_line(line)
             if log_entry:
                 try:
                     total_file_size += log_entry['file_size']
-                    lines_by_status[log_entry['status_code']] += 1
+                    if log_entry['status_code'] in codes:
+                        lines_by_status[log_entry['status_code']] += 1
                 except BaseException:
                     pass
                 line_count += 1

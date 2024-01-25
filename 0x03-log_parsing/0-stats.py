@@ -1,49 +1,54 @@
 #!/usr/bin/python3
-'''a script that reads stdin line by line and computes metrics'''
-
-
-import sys
+'''script to parse logs'''
 import re
+from collections import defaultdict
 
 
-def print_metrics(_sum, codes):
-    print("File size: {}".format(_sum))
-    for key, value in sorted(status_dic.items()):
-        if value != 0:
-            print("{}: {}".format(key, value))
+def process_log_line(line):
+    '''Retrieves the necessary components from a logged file'''
+    pattern = re.compile(r'''
+        ^
+        (\d+\.\d+\.\d+\.\d+)
+        \s-\s\[([^]]+)\]
+        \s"GET\s/projects/260\sHTTP/1\.1"\s(\d+)\s(\d+)
+        $
+        ''', re.VERBOSE)
+    is_valid_line = pattern.match(line)
+    if not is_valid_line:
+        return None
+    # Extract relevant information from the match object
+    ip_address, date, status_code, file_size = is_valid_line.groups()
+    # Convert file_size to an integer
+    file_size = int(file_size)
+    # Return a dictionary with the extracted information
+    return {
+            'ip_address': ip_address,
+            'date': date, 'status_code': int(status_code),
+            'file_size': file_size
+            }
+
+
+def print_statistics(total_file_size, lines_by_status):
+    print('File size: {:d}'.format(total_file_size))
+    for status_code in sorted(lines_by_status):
+        print('{}: {:d}'.format(status_code, lines_by_status[status_code]))
 
 
 if __name__ == "__main__":
-    pattern = (
-        r'^('
-        r'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'
-        r'){3}'
-        r'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
-        r' - \[([^\]]+)\] "GET /projects/260 HTTP/1\.1"'
-        r' (\d{3}) (\d+)$'
-    )
-
-    count = 0
-    _sum = 0
-    status_dic = {'200': 0, '301': 0, '400': 0, '401': 0,
-                  '403': 0, '404': 0, '405': 0, '500': 0}
-
+    import sys
+    lines_by_status = defaultdict(int)
+    total_file_size = 0
+    line_count = 0
     try:
         for line in sys.stdin:
-            match = re.match(pattern, line)
-            if match:
-                line_parts = line.split(" ")
-                status = line_parts[7]
-                if status in status_dic.keys():
-                    status_dic[status] += 1
-                count += 1
-                _sum += int(line_parts[8])
-                if count % 10 == 0:
-                    count = 0
-                    print_metrics(_sum, status_dic.items())
-        print_metrics(_sum, status_dic.items())
+            log_entry = process_log_line(line)
+            if log_entry:
+                total_file_size += log_entry['file_size']
+                lines_by_status[log_entry['status_code']] += 1
+                line_count += 1
+                if line_count % 10 == 0:
+                    print_statistics(total_file_size, lines_by_status)
+        print_statistics(total_file_size, lines_by_status)
     except KeyboardInterrupt:
-        print('File size: {}'.format(_sum))
-        for key, value in sorted(status_dic.items()):
-            if value != 0:
-                print('{}: {}'.format(key, value))
+        print_statistics(total_file_size, lines_by_status)
+        raise

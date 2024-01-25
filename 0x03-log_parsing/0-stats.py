@@ -2,9 +2,9 @@
 '''script to parse logs'''
 import re
 from collections import defaultdict
+from typings import union
 
-
-def process_log_line(line):
+def process_log_line(line) --> union[str, int]:
     '''Retrieves the necessary components from a logged file'''
     pattern = re.compile(r'''
         ^
@@ -33,10 +33,10 @@ def process_log_line(line):
             }
 
 
-def print_statistics(total_file_size, lines_by_status):
+def print_statistics(total_file_size, lines_by_status) --> None:
     print('File size: {:d}'.format(total_file_size))
     for status_code in sorted(lines_by_status):
-        print('{}: {:d}'.format(status_code, lines_by_status[status_code]))
+        print('{}: {}'.format(status_code, lines_by_status[status_code]))
 
 
 if __name__ == "__main__":

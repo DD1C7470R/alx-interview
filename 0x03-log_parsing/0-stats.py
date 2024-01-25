@@ -34,22 +34,27 @@ if __name__ == "__main__":
     lines_by_status = defaultdict(int)
     total_file_size = 0
     line_count = 0
+    file_size = 0
     codes =  ["200", "301", "400", "401", "403", "404", "405", "500"]
     try:
         for line in sys.stdin:
             line_count += 1
-            log_entry = process_log_line(line)
+            is_valid_line = line.split()
+            # Extract relevant information from the match object
+            try:
+                status_code = is_valid_line[-2]
+                file_size += int(is_valid_line[-1])
 
-            if log_entry:
                 try:
-                    total_file_size += log_entry['file_size']
-                    if log_entry['status_code'] in codes:
-                        lines_by_status[log_entry['status_code']] += 1
+                    if status_code in codes:
+                        lines_by_status[status_code] += 1
                 except BaseException:
                     pass
-                if line_count % 10 == 0:
-                    print_statistics(total_file_size, lines_by_status)
-        print_statistics(total_file_size, lines_by_status)
+            except BaseException:
+                pass
+            if line_count % 10 == 0:
+                print_statistics(file_size, lines_by_status)
+        print_statistics(file_size, lines_by_status)
     except KeyboardInterrupt:
-        print_statistics(total_file_size, lines_by_status)
+        print_statistics(file_size, lines_by_status)
         raise

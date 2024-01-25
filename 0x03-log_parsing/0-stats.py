@@ -36,7 +36,12 @@ try:
                     if value != 0:
                         print("{}: {}".format(key, value))
 
-except KeyboardInterrupt:
+except Exception as err:
+    if isinstance(err, KeyboardInterrupt):
+        raise
+    else:
+        pass
+finally:
     print('File size: {:d}'.format(_sum))
     for key, value in sorted(status_dic.items()):
         if value != 0:

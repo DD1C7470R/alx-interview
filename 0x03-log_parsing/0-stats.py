@@ -21,7 +21,11 @@ def process_log_line(line):
     file_size = int(file_size)
 
     # Return a dictionary with the extracted information
-    return {'ip_address': ip_address, 'date': date, 'status_code': int(status_code), 'file_size': file_size}
+    return {
+            'ip_address': ip_address,
+            'date': date, 'status_code': int(status_code),
+            'file_size': file_size
+            }
 
 
 def compute_metrics(log_lines):

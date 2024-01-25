@@ -1,32 +1,24 @@
 #!/usr/bin/python3
 '''script to parse logs'''
-import re
 from collections import defaultdict
 
 
 def process_log_line(line):
     '''Retrieves the necessary components from a logged file'''
-    pattern = re.compile(r'''
-        ^
-        (\d+\.\d+\.\d+\.\d+)
-        \s-\s\[([^]]+)\]
-        \s"GET\s/projects/260\sHTTP/1\.1"\s(\d+)\s(\d+)
-        $
-        ''', re.VERBOSE)
     try:
-        is_valid_line = pattern.match(line)
+        is_valid_line = line.split()
         if not is_valid_line:
             return None
         # Extract relevant information from the match object
-        ip_address, date, status_code, file_size = is_valid_line.groups()
+        status_code = is_valid_line[-2]
+        file_size = is_valid_line[-1]
         # Convert file_size to an integer
         file_size = int(file_size)
     except BaseException:
         pass
         # Return a dictionary with the extracted information
     return {
-            'ip_address': ip_address,
-            'date': date, 'status_code': int(status_code),
+             'status_code': int(status_code),
             'file_size': file_size
             }
 

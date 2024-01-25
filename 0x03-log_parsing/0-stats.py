@@ -37,7 +37,9 @@ if __name__ == "__main__":
     codes =  ["200", "301", "400", "401", "403", "404", "405", "500"]
     try:
         for line in sys.stdin:
+            line_count += 1
             log_entry = process_log_line(line)
+
             if log_entry:
                 try:
                     total_file_size += log_entry['file_size']
@@ -45,7 +47,6 @@ if __name__ == "__main__":
                         lines_by_status[log_entry['status_code']] += 1
                 except BaseException:
                     pass
-                line_count += 1
                 if line_count % 10 == 0:
                     print_statistics(total_file_size, lines_by_status)
         print_statistics(total_file_size, lines_by_status)

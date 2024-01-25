@@ -33,27 +33,6 @@ def process_log_line(line):
             }
 
 
-def compute_metrics(log_lines):
-    '''Retrieves the necessary components from a logged file'''
-    total_file_size = 0
-    status_codes = {}
-    for line in log_lines:
-        processed_line = process_log_line(line)
-        total_file_size += processed_line['file_size']
-
-        if str(processed_line['status_code']) in list(status_codes.keys()):
-            val = status_codes.get('{}'.format(processed_line['status_code']))
-            status_codes.update(
-                    {'{}'.format(processed_line['status_code']): val + 1}
-            )
-        else:
-            status_codes['{}'.format(processed_line['status_code'])] = 1
-    return {
-        'total_file_size': total_file_size,
-        'status_codes': status_codes
-    }
-
-
 def print_statistics(total_file_size, lines_by_status):
     print(f'File size: {total_file_size}')
     for status_code in sorted(lines_by_status):
@@ -61,12 +40,13 @@ def print_statistics(total_file_size, lines_by_status):
 
 
 if __name__ == "__main__":
+    import sys
     lines_by_status = defaultdict(int)
     total_file_size = 0
     line_count = 0
 
     try:
-        for line in iter(input, ''):
+        for line in sys.stdin:
             log_entry = process_log_line(line)
 
             if log_entry:

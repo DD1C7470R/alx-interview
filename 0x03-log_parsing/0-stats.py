@@ -1,39 +1,49 @@
 #!/usr/bin/python3
-"""
-Log parsing
-"""
+'''a script that reads stdin line by line and computes metrics'''
+
 
 import sys
+import re
 
-if __name__ == '__main__':
 
-    filesize, count = 0, 0
-    codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
-    stats = {k: 0 for k in codes}
+def print_metrics(_sum, codes):
+    print("File size: {}".format(_sum))
+    for key, value in sorted(status_dic.items()):
+        if value != 0:
+            print("{}: {}".format(key, value))
 
-    def print_stats(stats: dict, file_size: int) -> None:
-        print("File size: {:d}".format(filesize))
-        for k, v in sorted(stats.items()):
-            if v:
-                print("{}: {}".format(k, v))
+
+if __name__ == "__main__":
+    pattern = (
+        r'^('
+        r'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.'
+        r'){3}'
+        r'([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
+        r' - \[([^\]]+)\] "GET /projects/260 HTTP/1\.1"'
+        r' (\d{3}) (\d+)$'
+    )
+
+    count = 0
+    _sum = 0
+    status_dic = {'200': 0, '301': 0, '400': 0, '401': 0,
+                  '403': 0, '404': 0, '405': 0, '500': 0}
 
     try:
         for line in sys.stdin:
-            count += 1
-            data = line.split()
-            try:
-                status_code = data[-2]
-                if status_code in stats:
-                    stats[status_code] += 1
-            except BaseException:
-                pass
-            try:
-                filesize += int(data[-1])
-            except BaseException:
-                pass
-            if count % 10 == 0:
-                print_stats(stats, filesize)
-        print_stats(stats, filesize)
+            match = re.match(pattern, line)
+            if match:
+                line_parts = line.split(" ")
+                status = line_parts[7]
+                if status in status_dic.keys():
+                    status_dic[status] += 1
+                count += 1
+                _sum += int(line_parts[8])
+                if count % 10 == 0:
+                    count = 0
+                    print_metrics(_sum, status_dic.items())
+        print_metrics(_sum, status_dic.items())
     except KeyboardInterrupt:
-        print_stats(stats, filesize)
-        raise
+        print('File size: {}'.format(_sum))
+        for key, value in sorted(status_dic.items()):
+            if value != 0:
+                print('{}: {}'.format(key, value))

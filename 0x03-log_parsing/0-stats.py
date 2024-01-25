@@ -5,11 +5,15 @@ import re
 
 def process_log_line(line):
     '''Retrieves the necessary components from a logged file'''
-    pattern = (
-        r'^(\d+\.\d+\.\d+\.\d+) - \[([^]]+)\] "GET /projects/260 HTTP/1.1" (\d+) (\d+)$'
-    )
-    matcher = re.compile(pattern)
-    is_valid_line = matcher.match(line)
+    pattern = re.compile(r'''
+        ^
+        (\d+\.\d+\.\d+\.\d+)
+        \s-\s\[([^]]+)\]
+        \s"GET\s/projects/260\sHTTP/1\.1"\s(\d+)\s(\d+)
+        $
+        ''', re.VERBOSE)
+
+    is_valid_line = pattern.match(line)
 
     if not is_valid_line:
         return None

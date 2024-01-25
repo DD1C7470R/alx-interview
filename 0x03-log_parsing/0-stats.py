@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 '''script to parse logs'''
 import re
+from collections import defaultdict
 
 
 def process_log_line(line):
@@ -53,19 +54,29 @@ def compute_metrics(log_lines):
     }
 
 
+def print_statistics(total_file_size, lines_by_status):
+    print(f'File size: {total_file_size}')
+    for status_code in sorted(lines_by_status):
+        print(f'{status_code}: {lines_by_status[status_code]}')
+
+
 if __name__ == "__main__":
-    max_lines = 10
-    lines = []
-    computed_file_size = 0
-    for line in iter(input, ''):
-        if len(lines) < max_lines + 1:
-            lines.append(line.strip())
-        if len(lines) == 10:
-            computed_metrics = compute_metrics(lines)
-            if computed_metrics:
-                computed_file_size += computed_metrics['total_file_size']
-            lines = []
-            lines.append(line.strip())
-            print(f'File size: {computed_file_size}')
-            for key, value in sorted(computed_metrics['status_codes'].items()):
-                print(f'{key} {value}')
+    lines_by_status = defaultdict(int)
+    total_file_size = 0
+    line_count = 0
+
+    try:
+        for line in iter(input, ''):
+            log_entry = process_log_line(line)
+
+            if log_entry:
+                total_file_size += log_entry['file_size']
+                lines_by_status[log_entry['status_code']] += 1
+                line_count += 1
+
+                if line_count % 10 == 0:
+                    print_statistics(total_file_size, lines_by_status)
+
+    except KeyboardInterrupt:
+        print("\nKeyboard interruption. Printing current statistics:")
+        print_statistics(total_file_size, lines_by_status)

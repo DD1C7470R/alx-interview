@@ -6,7 +6,7 @@ Main file for testing
 
 def makeChange(coins: list, total: int) -> int:
     """Defines and implementations"""
-    if total == 0:
+    if total <= 0:
         return 0
 
     n = len(coins)

@@ -6,7 +6,7 @@ Main file for testing
 
 def makeChange(coins: list, total: int) -> int:
     """Defines and implementations"""
-   if total <= 0:
+    if total <= 0:
         return 0
 
     dp = [float('inf')] * (total + 1)
@@ -16,7 +16,7 @@ def makeChange(coins: list, total: int) -> int:
         for i in range(coin, total + 1):
             dp[i] = min(dp[i], dp[i - coin] + 1)
 
-   if dp[total] == float('inf'):
+    if dp[total] == float('inf'):
         return -1
 
     return dp[total]

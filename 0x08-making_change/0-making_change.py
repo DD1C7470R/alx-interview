@@ -6,21 +6,12 @@ Main file for testing
 
 def makeChange(coins: list, total: int) -> int:
     """Defines and implementations"""
-    if total == 0:
-        return 0
-    if len(coins) == 0:
-        return 0
-    n = len(coins)
-    ans = []
-    i = n - 1
-    tmp = total
-    coins = sorted(coins)
-    while i >= 0:
-        while tmp >= coins[i]:
-            tmp -= coins[i]
-            ans.append(coins[i])
-        i -= 1
-    if tmp != 0:
-        return -1
 
-    return len(ans)
+    if total < 0:
+        return -1
+    dp = [float('inf')] * (total + 1)
+    dp[0] = 0
+    for coin in coins:
+        for i in range(coin, total + 1):
+            dp[i] = min(dp[i], dp[i - coin] + 1)
+    return dp[total] if dp[total] != float('inf') else -1

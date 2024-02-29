@@ -8,7 +8,8 @@ def makeChange(coins: list, total: int) -> int:
     """Defines and implementations"""
     if total == 0:
         return 0
-
+    if len(coins) == 0:
+        return 0
     n = len(coins)
     ans = []
     i = n - 1

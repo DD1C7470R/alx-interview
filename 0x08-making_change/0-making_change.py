@@ -1,4 +1,10 @@
-def makeChange(coins, total):
+#!/usr/bin/python3
+"""
+Main file for testing
+"""
+
+def makeChange(coins: list, total: int) -> int:
+    """Defines and implementations"""
     if total == 0:
             return 0
     

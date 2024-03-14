@@ -27,6 +27,8 @@ def isWinner(x, nums):
     }
     winner = None
     nround = 0
+    if len(nums) == 0:
+        pickers['Ben'] += 1
     while x > nround:
         next_picker = 'Ben'
         current_num = nums[nround]
